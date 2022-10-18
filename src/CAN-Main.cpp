@@ -19,21 +19,14 @@
 #define ESP32_CAN_RX_PIN GPIO_NUM_4  // Set CAN RX port to 4
 
 #include <Arduino.h>
-#include <ArduinoJson.h>
 #include <ArduinoOTA.h>
 #include <DNSServer.h>
-#include <DallasTemperature.h>
 #include <freertos/FreeRTOS.h>
 #include <N2kMessages.h>
 
 #include <N2kMsg.h>
-#include <NMEA0183.h>
-#include <NMEA0183Messages.h>
-#include <NMEA0183Msg.h>
 #include <NMEA2000.h>
 #include <NMEA2000_CAN.h>  // This will automatically choose right CAN library and create suitable NMEA2000 object
-#include <Seasmart.h>
-#include <OneButton.h>
 #include <Preferences.h>
 #include <Seasmart.h>
 #include <Time.h>
@@ -43,10 +36,7 @@
 
 #include "BoatData.h"
 #include "ESPmDNS.h"
-//#include "List.h"
-#include "N2kDataToNMEA0183.h"
 #include "N2kDeviceList.h"
-#include "NMEA0183Handlers.h"
 #include <nmea2000Handlers.h>
 #include <GwShell.h>
 #include <map>
@@ -77,7 +67,6 @@ using LinkedList = std::list<T>;
 
 #define USE_ARDUINO_OTA true
 #define USE_MDNS true
-#define USE_SENSORS true
 
 #define GWMODE "Engine"
 #define MAX_NMEA2000_MESSAGE_SEASMART_SIZE 500 
@@ -111,9 +100,6 @@ const IPAddress AP_subnet(255, 255, 255, 0);
 
 int wifiType = 0;  // 0= Client 1= AP
 
-const uint16_t ServerPort = 2222;  // Define the TCP port.
-                                    // This is where server sends NMea0183 data. 
-
 // Define the console to output to serial at startup.
 // this can get changed later, eg in the gwshell.
 Stream * Console = & Serial;
@@ -126,37 +112,16 @@ const int YDudpPort = 4444;                   // port 4444 is for the Yacht devi
 // Struct to update BoatData. See BoatData.h for content
 tBoatData BoatData;
 
-#ifdef HAVE_GPS
-// NMEA0183 for the GPS handler messages
-tNMEA0183 GPS_NMEA0183;
-#endif
-
-#ifdef HAVE_NMEA0183
-// NMEA0183 for standard messages both sending and receive
-tNMEA0183 STD_NMEA0183;
-#endif
-
 int NodeAddress = 32;  // To store last NMEA2000 Node Address
 
 const size_t MaxClients = 10;
-bool SendNMEA0183Conversion = true;  // Do we send NMEA2000 -> NMEA0183 conversion
 
 // Define the network servers
 // The web server on port 80
 WebServer webserver(80);
 
-// TCP server for serving up NMEA0183
-WiFiServer server(ServerPort, MaxClients);
-
-// A JSON server to provide JSON formatted output
-WiFiServer json(90);
-
 // The telnet server for the shell.
 WiFiServer telnet(23);
-
-// A list of connected TCP clients for the TCP NMEA0183 port
-using tWiFiClientPtr = std::shared_ptr<WiFiClient>;
-LinkedList<tWiFiClientPtr> clients;
 
 // Set the information for other bus devices, which messages we support
 const unsigned long TransmitMessages[] PROGMEM = {  127489L,  // Engine dynamic
@@ -177,13 +142,6 @@ const unsigned long ReceiveMessages[] PROGMEM = {/*126992L,*/  // System time
                                                  127245UL,     // Rudder
                                                  0};
 
-// Battery voltage is connected GPIO 34 (Analog ADC1_CH6)
-const int ADCpin = 34;
-float voltage = 0;
-float temp = 0;
-
-// Buffer config
-#define MAX_NMEA0183_MESSAGE_SIZE 150
 
 String other_data;
 
@@ -207,7 +165,6 @@ uint32_t mTimeSeconds = 0;
 
 // Forward declarations
 void HandleNMEA2000Msg(const tN2kMsg &);
-void SendNMEA0183Message(const tNMEA0183Msg &);
 void GetTemperature(void *parameter);
 void loadTimerFunc(TimerHandle_t xTimer);
 void handleIndex();
@@ -303,18 +260,6 @@ void disconnectWifi() {
 // Map for received n2k messages. Logs the PGN and the count
 std::map<int, int> N2kMsgMap;
 
-// Map for received NMEA0183 messages. Logs the tag and the count
-std::map<String, int> NMEA0183MsgMap;
-
-// Map for the GPS info. Logs the sentences and values
-std::map<String, String> Gps;
-
-// Map for the satellites in view.
-std::map<int, tGSV> Satellites;
-
-// Map for all external sensors and their values
-std::map<String, String> Sensors;
-
 uint8_t chipid[6];
 String macAddress;
 
@@ -323,11 +268,6 @@ String html_start = HTML_start; //Read HTML contents
 String html_end = HTML_end;
 void handleRoot() {
  webserver.send(200, "text/html", html_start + html_end); //Send web page
-}
-
-void handleData() {
-    String adcValue(random(100));
-    webserver.send(200, "application/json", adcValue);  //Send ADC value only to client ajax request
 }
 
 void handleBoat() {
@@ -353,21 +293,7 @@ void handleBoat() {
     getSysInfo(boatData);
     boatData.printf("</div>");
 
-    boatData.printf("<h1>GPS</h1>");
-    boatData.printf("<div class='info'>");
-    getGps(boatData);
-    getSatellites(boatData);
-
-    boatData.printf("</div>");
-
-    boatData.printf("<h1>Sensors</h1>");
-    boatData.printf("<div class='info'>");
-    getSensors(boatData);
-    boatData.printf("</div>");
-
-    boatData.printf("</pre>");
-    webserver.send(200, "text/html", html_start + boatData.data.c_str() + html_end);  //Send web page
- 
+    webserver.send(200, "text/html", html_start + boatData.data.c_str() + html_end);  //Send web page 
 }
 
 /**
@@ -516,7 +442,6 @@ void setup() {
         Console->print("AP IP address: ");
         Console->println(UnitIP);
         wifiType = 1;
-        oled_printf(0, lineh, "AP %s", UnitIP.toString().c_str());
         WifiMode = "AP";
         WifiIP = UnitIP.toString();
         WifiSSID = AP_ssid;
@@ -528,59 +453,9 @@ void setup() {
         Console->println("IP client address: ");
         Console->println(WiFi.localIP());
         UnitIP = WiFi.localIP();
-        oled_printf(0, lineh, "Client %s", WiFi.localIP().toString().c_str());
     }
 
     sleep(10);
-
-#ifdef HAVE_GPS
-    // Init the serial port for the GPS. The GPS is a Blox Neo 6m module.
-    // This module outputs NMEA0183 serial data at 9600 bps.
-    // Other modules may need different settings.
-    Serial1.begin(9600, SERIAL_8N1, RXD0, TXD0);
-    Console->println("***Serial Txd is on pin: " + String(TXD0));
-    Console->println("***Serial Rxd is on pin: " + String(RXD0));
-#endif
-
-#ifdef HAVE_NMEA0183
-    // Init the serial port for the external NMEA0183 device
-    // This device outputs NMEA0183 serial data at the standard 4800 bps.
-    Serial1.begin(4800, SERIAL_8N1, RXD0, TXD0);
-    Console->println("***Serial Txd is on pin: " + String(TXD0));
-    Console->println("***Serial Rxd is on pin: " + String(RXD0));
-#endif
-
-#if defined USE_SENSORS
-    // start the i2c and if that succeeds start looking for the sensors
-    if (Wire.begin()) {
-        // Init the pressure and temperature sensor
-        bmp180_init();
-
-        // Init the BNo055 gyro
-        bno055_init();
-
-        // Init the oled display
-        oled_init();
-    }
-
-    oled_write(0, 0, "Initialising...");
-#endif
-
-#ifdef HAVE_GPS
-    // Setup NMEA0183 ports and handlers
-    InitNMEA0183Handlers(&NMEA2000, &BoatData);
-    GPS_NMEA0183.SetMsgHandler(HandleNMEA0183Msg);
-    GPS_NMEA0183.SetMessageStream(&Serial1);
-    GPS_NMEA0183.Open();
-#endif
-
-#ifdef HAVE_NMEA0183
-   // Setup NMEA0183 ports and handlers
-    InitNMEA0183Handlers(&NMEA2000, &BoatData);
-    STD_NMEA0183.SetMsgHandler(HandleNMEA0183Msg);
-    STD_NMEA0183.SetMessageStream(&Serial1);
-    STD_NMEA0183.Open();
-#endif
 
  
 #ifdef USE_ARDUINO_OTA
@@ -609,18 +484,11 @@ void setup() {
 
 #endif  // MDNS
 
-    // Start TCP server
-    server.begin();
-
-    // Start JSON server
-    json.begin();
-
     // Start the telnet server
     telnet.begin();
 
     // Start Web Server
     webserver.on("/", handleRoot);
-    webserver.on("/data", handleData);
     webserver.on("/boat", handleBoat);
 
     webserver.onNotFound(handleNotFound);
@@ -631,8 +499,7 @@ void setup() {
     // Init the shell
     initGwShell();
 
-    // Init the voltage and current sensors
-        // Initialize the INA219.
+    // Init the INA219 voltage and current sensors
     if (!ina219_house.begin()) {
         Serial.println("Failed to find INA219 chip HOUSE");
         while (1) {
@@ -675,7 +542,6 @@ void setup() {
                                   2046  // Just choosen free from code list on http://www.nmea.org/Assets/20121020%20nmea%202000%20registration%20list.pdf
     );
 
-    oled_printf(0, lineh * 2, "My ID 0x%x", id);
 
     
     NMEA2000.SetConfigurationInformation("Naiad ",
@@ -693,13 +559,6 @@ void setup() {
 
     NMEA2000.ExtendTransmitMessages(TransmitMessages);
     NMEA2000.ExtendReceiveMessages(ReceiveMessages);
-#if defined HAVE_GPS || defined HAVE_NMEA0183
-    NMEA2000.AttachMsgHandler(&N2kDataToNMEA0183);  // NMEA 2000 -> NMEA 0183 conversion
-    
-   //NMEA2000.SetMsgHandler(HandleNMEA2000Msg);       // Also send all NMEA2000 messages in SeaSmart format
-
-    N2kDataToNMEA0183.SetSendNMEA0183MessageCallback(SendNMEA0183Message);
-#endif
     NMEA2000.Open();
 
     IdleInit();
@@ -717,25 +576,7 @@ void handleNotFound() {
     webserver.send(404, "text/plain", "File Not Found\n\n");
 }
 
-//*****************************************************************************
-void SendBufToClients(const char *buf) {
-    for (auto it = clients.begin(); it != clients.end(); it++) {
-        if ((*it) != NULL && (*it)->connected()) {
-            (*it)->println(buf);
-        }
-    }
-}
-
 #define MAX_NMEA2000_MESSAGE_SEASMART_SIZE 500
-
-//*****************************************************************************
-void SendNMEA0183Message(const tNMEA0183Msg &NMEA0183Msg) {
-    if (!SendNMEA0183Conversion) return;
-
-    char buf[MAX_NMEA0183_MESSAGE_SIZE];
-    if (!NMEA0183Msg.GetMessage(buf, MAX_NMEA0183_MESSAGE_SIZE)) return;
-    SendBufToClients(buf);
-}
 
 bool IsTimeToUpdate(unsigned long NextUpdate) {
     return (NextUpdate < millis());
@@ -807,56 +648,10 @@ void SendN2kEngineFast() {
                                    0);
 
             NMEA2000.SendMsg(N2kMsg);
-         //   GwSendYD(N2kMsg);
-
-            Sensors["RPM"] = String(rpm);
+            GwSendYD(N2kMsg);
         }
     }
 }
-
-//*****************************************************************************
-void AddClient(WiFiClient &client) {
-    Console->println("New Client.");
-    clients.push_back(tWiFiClientPtr(new WiFiClient(client)));
-}
-
-//*****************************************************************************
-void StopClient(LinkedList<tWiFiClientPtr>::iterator &it) {
-    Console->println("Client Disconnected.");
-    (*it)->stop();
-    it = clients.erase(it);
-}
-
-//*****************************************************************************
-void CheckConnections() {
-    WiFiClient client = server.available();  // listen for incoming clients
-
-    if (client) AddClient(client);
-
-    for (auto it = clients.begin(); it != clients.end(); it++) {
-        if ((*it) != NULL) {
-            if (!(*it)->connected()) {
-                StopClient(it);
-            } else {
-                if ((*it)->available()) {
-                    char c = (*it)->read();
-                    if (c == 0x03) StopClient(it);  // Close connection by ctrl-c
-                }
-            }
-        } else {
-            it = clients.erase(it);  // Should have been erased by StopClient
-        }
-    }
-}
-
-// ReadVoltage is used to improve the linearity of the ESP32 ADC see: https://github.com/G6EJD/ESP32-ADC-Accuracy-Improvement-function
-
-double ReadVoltage(byte pin) {
-    double reading = analogRead(pin);  // Reference voltage is 3v3 so maximum reading is 3v3 = 4095 in range 0 to 4095
-    if (reading < 1 || reading > 4095) return 0;
-    // return -0.000000000009824 * pow(reading,3) + 0.000000016557283 * pow(reading,2) + 0.000854596860691 * reading + 0.065440348345433;
-    return (-0.000000000000016 * pow(reading, 4) + 0.000000000118171 * pow(reading, 3) - 0.000000301211691 * pow(reading, 2) + 0.001109019271794 * reading + 0.034143524634089) * 1000;
-}  // Added an improved polynomial, use either, comment out as required
 
 static WiFiClient telnetClient;
 
@@ -914,63 +709,6 @@ void handleTelnet() {
     */
 }
 
-void handle_json() {
-    WiFiClient client = json.available();
-
-    // Do we have a client?
-    if (!client) return;
-
-    // Console->println(F("New client"));
-
-    // Read the request (we ignore the content in this example)
-    while (client.available()) client.read();
-
-    // Allocate JsonBuffer
-    // Use arduinojson.org/assistant to compute the capacity.
-    StaticJsonDocument<800> root;
-
-    root["Latitude"] = BoatData.Latitude;
-    root["Longitude"] = BoatData.Longitude;
-    root["Heading"] = BoatData.Heading;
-    root["COG"] = BoatData.COG;
-    root["SOG"] = BoatData.SOG;
-    root["STW"] = BoatData.STW;
-    root["AWS"] = BoatData.AWS;
-    root["TWS"] = BoatData.TWS;
-    root["MaxAws"] = BoatData.MaxAws;
-    root["MaxTws"] = BoatData.MaxTws;
-    root["AWA"] = BoatData.AWA;
-    root["TWA"] = BoatData.TWA;
-    root["TWD"] = BoatData.TWD;
-    root["TripLog"] = BoatData.TripLog;
-    root["Log"] = BoatData.Log;
-    root["WaterTemperature"] = BoatData.WaterTemperature;
-    root["WaterDepth"] = BoatData.WaterDepth;
-    root["Variation"] = BoatData.Variation;
-    root["Altitude"] = BoatData.Altitude;
-    root["GPSTime"] = BoatData.GPSTime;
-    root["DaysSince1970"] = BoatData.DaysSince1970;
-    root["BatteryVoltage"] = voltage;
-
-    //Console->print(F("Sending: "));
-    //serializeJson(root, Serial);
-    //Console->println();
-
-    // Write response headers
-    client.println("HTTP/1.0 200 OK");
-    client.println("Content-Type: application/json");
-    client.println("Connection: close");
-    client.println();
-
-    // Write JSON document
-    serializeJsonPretty(root, client);
-
-    // Disconnect
-    client.stop();
-}
-
-
-
 void displayBoat(Stream & stream) {
     stream.printf("Latitude      %f\n", BoatData.Latitude);
     stream.printf("Longitude     %f\n",BoatData.Longitude);
@@ -993,8 +731,6 @@ void displayBoat(Stream & stream) {
     stream.printf("Altitude      %f\n",BoatData.Altitude);
     stream.printf("GPSTime       %f\n",BoatData.GPSTime);
     stream.printf("DaysSince1970 %lu\n",BoatData.DaysSince1970);
-    stream.printf("BatteryVolt   %f\n",voltage);
-
 }
 
 
@@ -1080,8 +816,6 @@ void loop() {
     static time_t last = 0;
     static time_t last2 = 0;
     time_t now = time(NULL);;
-    static int nexti = 0;
-    const char spinner[] = {'|','/', '-', '\\'};
 
     // Process any n2k messages
     NMEA2000.ParseMessages();
@@ -1107,33 +841,19 @@ void loop() {
         mTimeSeconds++;
 
         // Blink the led
-
         //digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
-        oled_printf(0, 0, "Up %c %s", spinner[nexti], host_name.c_str());
-        nexti++;
-        if(nexti >= 4) {
-          nexti=0;
-        }
     }
  
     // Handle any web server requests
     webserver.handleClient();
-
-    // handle json requests
-    handle_json();
  
     // handle the telnet session
     handleTelnet();
  
     // And run and shell commands
     handleShell();
-
-    double AdcValue = ReadVoltage(ADCpin);
-    voltage = ((voltage * 15) + (AdcValue * ADC_Calibration_Value / 4096)) / 16;  // This implements a low pass filter to eliminate spike for ADC readings
-
     SendN2kEngineFast();
     SendN2kBattery();
-    CheckConnections(); 
     NMEA2000.ParseMessages();
  
     int SourceAddress = NMEA2000.GetN2kSource();
@@ -1142,23 +862,11 @@ void loop() {
         GwSetVal(LASTNODEADDRESS, String(SourceAddress));
         Console->printf("Address Change: New Address=%d\n", SourceAddress);
     }
- 
- #if defined HAVE_GPS || defined HAVE_NMEA0183
-    N2kDataToNMEA0183.Update(&BoatData);
-#endif
 
     // Dummy to empty input buffer to avoid board to stuck with e.g. NMEA Reader
     if (Console->available()) {
         Console->read();
     }
-
-
-#if ENABLE_DEBUG_LOG == 2
-    Console->print("Voltage:");
-    Console->println(voltage);
-    //Console->print("Temperature: ");Console->println(temp);
-    Console->println("");
-#endif
  
     if (wifiType == 0) {  // Check connection if working as client
         wifi_retry = 0;

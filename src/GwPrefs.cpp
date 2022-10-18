@@ -28,8 +28,6 @@ void GwPrefsInit() {
         Reg.push_back(PRESSCAL);
         Reg.push_back(COMPASSOFF);
         Reg.push_back(LASTNODEADDRESS);
-        Reg.push_back(USEGPS);
-        Reg.push_back(SENDHEADING);
         doneInit = true;
     }
 }

@@ -127,8 +127,4 @@
  /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/cores/esp32/ESP.h \
  src/StringStream.h src/GwShell.h \
  /Users/petermartin_2/Documents/Arduino/libraries/SimpleSerialShell/src/SimpleSerialShell.h \
- src/SysInfo.h \
- /Users/petermartin_2/Documents/Arduino/libraries/NMEA0183-1/NMEA0183Messages.h \
- /Users/petermartin_2/Documents/Arduino/libraries/NMEA0183-1/NMEA0183Msg.h \
- /Users/petermartin_2/Documents/Arduino/libraries/NMEA0183-1/NMEA0183Stream.h \
- src/GwPrefs.h
+ src/SysInfo.h src/GwPrefs.h

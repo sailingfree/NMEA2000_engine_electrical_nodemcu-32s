@@ -1,9 +1,5 @@
 # n2k-gateway
-An ESP32 based N2K gateway for various sensors and data sources
-
-I wanted a gateway to interface some of my older NMEA0183 equipment to my new B&G NMEA2000 kit. specificaly an AIS receiver from NASA and my trusty Horizon CP300i chart plotter. 
-
-I also wanted to add some feeds for i-gadgets, temperature sensors, the engine RPM and future gadgets and dongles.
+An ESP32 based N2K device for measuring engine RPM and two batteries
 
 This was developed for use on my Hanse301 yacht to improve navigation, safety at sea and as a general interest project.
 
@@ -22,8 +18,6 @@ To this I've added some extensions and additions:
 - A memory based Stream object that can be used as the console or for debugging output to the shell.
 
 - Basic system information, CPU usage, memory, versions, hardware, again that can be accessed from the shell.
-
-I've allso included temperature, pressure, GPS, compass and boat vitals from the engine, though some of these are duplicates/standby of other sensors on the boat. 
 
 I created a general purpose PCB for the ESP32, CAN bus driver and 12V to 5V DC regulator. The PCB has a general prototype area and exposes some of the GPIOs to headers. 
 

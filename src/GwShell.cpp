@@ -44,31 +44,6 @@ static int sys(int argc, char** argv) {
     return 0;
 }
 
-// Show the local GPS data
-// The GPS data is in a map so iterate over the data
-int gps(int argc, char ** argv) {
-    shell.println("Local GPS data");
-    StringStream s;
-    getGps(s);
-    shell.print(s.data);
-
-    shell.println("Satellite details");
-    getSatellites(s);
-    shell.print(s.data);
-
-    return 0;
-}
-
-// Show the sensors connected.
-// The sensor data is in a map
-int sensors(int argc, char ** argv) {
-    StringStream s;
-    getSensors(s);
-    shell.print(s.data);
-    
-    return 0;
-}
-
 // Networking information
 int net(int argc, char ** argv) {
     StringStream s;
@@ -177,8 +152,6 @@ void initGwShell() {
     shell.addCommand(F("list"), list);
     shell.addCommand(F("boat"), boat);
     shell.addCommand(F("sys"), sys);
-    shell.addCommand(F("gps"), gps);
-    shell.addCommand(F("sensors"), sensors);
     shell.addCommand(F("net"), net);
     shell.addCommand(F("getval"), getval);
     shell.addCommand(F("setval"), setval);

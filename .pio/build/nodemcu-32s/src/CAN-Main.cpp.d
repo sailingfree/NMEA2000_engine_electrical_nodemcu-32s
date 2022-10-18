@@ -124,9 +124,6 @@
  /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/spi_flash/include/esp_spi_flash.h \
  /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/spi_flash/include/esp_spi_flash_counters.h \
  /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/variants/nodemcu-32s/pins_arduino.h \
- /Users/petermartin_2/Documents/Arduino/libraries/ArduinoJson/src/ArduinoJson.h \
- /Users/petermartin_2/Documents/Arduino/libraries/ArduinoJson/src/ArduinoJson.hpp \
- /Users/petermartin_2/Documents/Arduino/libraries/ArduinoJson/src/ArduinoJson/Configuration.hpp \
  /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/libraries/ArduinoOTA/src/ArduinoOTA.h \
  /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/libraries/WiFi/src/WiFi.h \
  /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/cores/esp32/Print.h \
@@ -164,6 +161,7 @@
  /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/lwip/lwip/src/include/lwip/debug.h \
  /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/lwip/lwip/src/include/lwip/arch.h \
  /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/lwip/port/esp32/include/arch/cc.h \
+ /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/newlib/platform_include/errno.h \
  /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/lwip/port/esp32/include/arch/sys_arch.h \
  /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/lwip/port/esp32/include/arch/vfs_lwip.h \
  /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/lwip/lwip/src/include/lwip/def.h \
@@ -194,9 +192,6 @@
  /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/esp_rom/include/esp32/rom/md5_hash.h \
  /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/libraries/DNSServer/src/DNSServer.h \
  /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/libraries/WiFi/src/WiFiUdp.h \
- /Users/petermartin_2/Documents/Arduino/libraries/DallasTemperature/DallasTemperature.h \
- /Users/petermartin_2/Documents/Arduino/libraries/OneWire/OneWire.h \
- /Users/petermartin_2/Documents/Arduino/libraries/OneWire/util/OneWire_direct_regtype.h \
  /Users/petermartin_2/Documents/Arduino/libraries/NMEA2000/src/N2kMessages.h \
  /Users/petermartin_2/Documents/Arduino/libraries/NMEA2000/src/N2kMsg.h \
  /Users/petermartin_2/Documents/Arduino/libraries/NMEA2000/src/N2kStream.h \
@@ -204,11 +199,6 @@
  /Users/petermartin_2/Documents/Arduino/libraries/NMEA2000/src/N2kTypes.h \
  /Users/petermartin_2/Documents/Arduino/libraries/NMEA2000/src/NMEA2000StdTypes.h \
  /Users/petermartin_2/Documents/Arduino/libraries/NMEA2000/src/N2kMsg.h \
- /Users/petermartin_2/Documents/Arduino/libraries/NMEA0183-1/NMEA0183.h \
- /Users/petermartin_2/Documents/Arduino/libraries/NMEA0183-1/NMEA0183Stream.h \
- /Users/petermartin_2/Documents/Arduino/libraries/NMEA0183-1/NMEA0183Msg.h \
- /Users/petermartin_2/Documents/Arduino/libraries/NMEA0183-1/NMEA0183Messages.h \
- /Users/petermartin_2/Documents/Arduino/libraries/NMEA0183-1/NMEA0183Msg.h \
  /Users/petermartin_2/Documents/Arduino/libraries/NMEA2000/src/NMEA2000.h \
  /Users/petermartin_2/Documents/Arduino/libraries/NMEA2000/src/NMEA2000_CompilerDefns.h \
  /Users/petermartin_2/Documents/Arduino/libraries/NMEA2000/src/N2kCANMsg.h \
@@ -217,9 +207,8 @@
  /Users/petermartin_2/Documents/Arduino/libraries/NMEA2000/src/NMEA2000.h \
  /Users/petermartin_2/Documents/Arduino/libraries/NMEA2000_esp32-master/NMEA2000_esp32.h \
  /Users/petermartin_2/Documents/Arduino/libraries/NMEA2000_esp32-master/ESP32_CAN_def.h \
- /Users/petermartin_2/Documents/Arduino/libraries/NMEA2000/src/Seasmart.h \
- /Users/petermartin_2/Documents/Arduino/libraries/OneButton/src/OneButton.h \
  /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/libraries/Preferences/src/Preferences.h \
+ /Users/petermartin_2/Documents/Arduino/libraries/NMEA2000/src/Seasmart.h \
  /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/newlib/platform_include/Time.h \
  /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/libraries/WebServer/src/WebServer.h \
  /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/libraries/WebServer/src/HTTP_Method.h \
@@ -228,25 +217,13 @@
  /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/libraries/WebServer/src/detail/RequestHandler.h \
  /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/libraries/Wire/src/Wire.h \
  /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/cores/esp32/esp32-hal.h \
- src/bmp180_functions.h \
- /Users/petermartin_2/Documents/Arduino/libraries/BMP180MI/src/BMP180I2C.h \
- /Users/petermartin_2/Documents/Arduino/libraries/BMP180MI/src/BMP180TwoWire.h \
- /Users/petermartin_2/Documents/Arduino/libraries/BMP180MI/src/BMP180MI.h \
- src/bno055_functions.h \
- /Users/petermartin_2/Documents/Arduino/libraries/BohleBots_BNO055/src/BohleBots_BNO055.h \
- src/oled_func.h \
- /Users/petermartin_2/Documents/Arduino/libraries/ESP8266_and_ESP32_OLED_driver_for_SSD1306_displays/src/SSD1306.h \
- /Users/petermartin_2/Documents/Arduino/libraries/ESP8266_and_ESP32_OLED_driver_for_SSD1306_displays/src/SSD1306Wire.h \
- /Users/petermartin_2/Documents/Arduino/libraries/ESP8266_and_ESP32_OLED_driver_for_SSD1306_displays/src/OLEDDisplay.h \
- /Users/petermartin_2/Documents/Arduino/libraries/ESP8266_and_ESP32_OLED_driver_for_SSD1306_displays/src/OLEDDisplayFonts.h \
  src/BoatData.h \
  /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/libraries/ESPmDNS/src/ESPmDNS.h \
  /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/mdns/include/mdns.h \
- src/N2kDataToNMEA0183.h \
  /Users/petermartin_2/Documents/Arduino/libraries/NMEA2000/src/N2kDeviceList.h \
- src/NMEA0183Handlers.h src/SysInfo.h src/nmea2000Handlers.h \
- src/GwShell.h src/StringStream.h src/EngineRpm.h src/html_header.h \
- src/html_footer.h src/GwPrefs.h src/Idle.h src/Naiad_INA219.h \
+ src/nmea2000Handlers.h src/GwShell.h src/StringStream.h src/SysInfo.h \
+ src/EngineRpm.h src/html_header.h src/html_footer.h src/GwPrefs.h \
+ src/Idle.h src/Naiad_INA219.h \
  /Users/petermartin_2/Documents/Arduino/libraries/Adafruit_INA219/Adafruit_INA219.h \
  /Users/petermartin_2/Documents/Arduino/libraries/Adafruit_BusIO/Adafruit_BusIO_Register.h \
  /Users/petermartin_2/Documents/Arduino/libraries/Adafruit_BusIO/Adafruit_I2CDevice.h \

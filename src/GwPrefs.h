@@ -42,9 +42,3 @@ void GwPrint(Stream &s);
 
 // The N2K node address we last used
 #define LASTNODEADDRESS "LastNodeAddress"
-
-// Whether to use the internal GPS
-#define USEGPS "usegps"
-
-// Whether to use the internal compass
-#define SENDHEADING "useheading"
