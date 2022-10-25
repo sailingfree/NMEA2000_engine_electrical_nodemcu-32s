@@ -56,7 +56,7 @@ void loadTimerFunc(TimerHandle_t xTimer) {
         }
         avg = total[c] / (uint64_t) NSAMPLES;
         cpuAvg[c] = (calib[0] - avg) * 100 /calib[0];
-        Console->printf("CPU Usage for core %d %lld %d%%\n", c, avg, cpuAvg[c]);
+        //Console->printf("CPU Usage for core %d %lld %d%%\n", c, avg, cpuAvg[c]);
     }
     return;
 }
