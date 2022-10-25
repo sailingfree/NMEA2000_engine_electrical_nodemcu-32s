@@ -128,4 +128,5 @@
  /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/hal/include/hal/esp_flash_err.h \
  /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/spi_flash/include/esp_spi_flash.h \
  /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/spi_flash/include/esp_spi_flash_counters.h \
- /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/variants/nodemcu-32s/pins_arduino.h
+ /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/variants/nodemcu-32s/pins_arduino.h \
+ /Users/petermartin_2/Documents/Arduino/libraries/NMEA2000/src/N2kTimer.h

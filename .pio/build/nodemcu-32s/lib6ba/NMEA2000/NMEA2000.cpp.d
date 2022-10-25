@@ -132,5 +132,6 @@
  /Users/petermartin_2/Documents/Arduino/libraries/NMEA2000/src/N2kMsg.h \
  /Users/petermartin_2/Documents/Arduino/libraries/NMEA2000/src/N2kCANMsg.h \
  /Users/petermartin_2/Documents/Arduino/libraries/NMEA2000/src/N2kMsg.h \
+ /Users/petermartin_2/Documents/Arduino/libraries/NMEA2000/src/N2kTimer.h \
  /Users/petermartin_2/Documents/Arduino/libraries/NMEA2000/src/N2kGroupFunction.h \
  /Users/petermartin_2/Documents/Arduino/libraries/NMEA2000/src/N2kGroupFunctionDefaultHandlers.h

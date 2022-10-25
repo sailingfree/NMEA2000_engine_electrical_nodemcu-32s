@@ -202,6 +202,7 @@
  /Users/petermartin_2/Documents/Arduino/libraries/NMEA2000/src/NMEA2000.h \
  /Users/petermartin_2/Documents/Arduino/libraries/NMEA2000/src/NMEA2000_CompilerDefns.h \
  /Users/petermartin_2/Documents/Arduino/libraries/NMEA2000/src/N2kCANMsg.h \
+ /Users/petermartin_2/Documents/Arduino/libraries/NMEA2000/src/N2kTimer.h \
  /Users/petermartin_2/Documents/Arduino/libraries/NMEA2000/src/N2kGroupFunction.h \
  /Users/petermartin_2/Documents/Arduino/libraries/NMEA2000/src/NMEA2000_CAN.h \
  /Users/petermartin_2/Documents/Arduino/libraries/NMEA2000/src/NMEA2000.h \

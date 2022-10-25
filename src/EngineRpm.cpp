@@ -8,10 +8,31 @@
 // A timer ISR regulaly samples the frequency, applies a low pass filter
 // and makes the RPM value available for external functions to read.
 
+/*
+Copyright (c) 2022 Peter Martin www.naiadhome.com
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of
+this software and associated documentation files (the "Software"), to deal in
+the Software without restriction, including without limitation the rights to use,
+copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the
+Software, and to permit persons to whom the Software is furnished to do so,
+subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
+OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+*/
+
 #include <Arduino.h>
 #include <GwPrefs.h>
 
-extern Stream * Console;
+extern Stream* Console;
 
 // RPM data. Generator RPM is measured on connector "W"
 static double poles;
@@ -26,7 +47,7 @@ volatile uint64_t PeriodCount;  // period in counts of 0.000001 of a second
 unsigned long Last_int_time = 0;
 hw_timer_t* timer = NULL;                         // pointer to a variable of type hw_timer_t
 portMUX_TYPE mux = portMUX_INITIALIZER_UNLOCKED;  // synchs between main code and interrupt?
-hw_timer_t * sample_timer = NULL;
+hw_timer_t* sample_timer = NULL;
 
 // RPM Event Interrupt
 // Enters on falling edge
@@ -34,18 +55,17 @@ uint32_t filter_depth = 64;
 //=======================================
 void IRAM_ATTR handleInterrupt() {
     portENTER_CRITICAL_ISR(&mux);
-    uint64_t TempVal = timerRead(timer);  // value of timer at interrupt
-    uint64_t TmpPeriodCount = TempVal - StartValue;   // period count between rising edges in 0.000001 of a second
-    StartValue = TempVal;                 // puts latest reading as start for next calculation
-    PeriodCount =  ((PeriodCount * (filter_depth - 1)) + (TmpPeriodCount)) / filter_depth;  // This implements a low pass filter to eliminate spike for RPM measurements
+    uint64_t TempVal = timerRead(timer);                                                   // value of timer at interrupt
+    uint64_t TmpPeriodCount = TempVal - StartValue;                                        // period count between rising edges in 0.000001 of a second
+    StartValue = TempVal;                                                                  // puts latest reading as start for next calculation
+    PeriodCount = ((PeriodCount * (filter_depth - 1)) + (TmpPeriodCount)) / filter_depth;  // This implements a low pass filter to eliminate spike for RPM measurements
     portEXIT_CRITICAL_ISR(&mux);
     Last_int_time = millis();
 }
 
-void IRAM_ATTR handleSampleTimer() 
-{
+void IRAM_ATTR handleSampleTimer() {
     portENTER_CRITICAL_ISR(&mux);
-digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
+    digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
     portEXIT_CRITICAL_ISR(&mux);
 }
 void InitRPM() {
@@ -67,9 +87,9 @@ void InitRPM() {
     timerStart(timer);  // starts the timer
 
     // The sample timer
-    sample_timer = timerBegin(1, 80, true);   // Second timer, 1usec
+    sample_timer = timerBegin(1, 80, true);  // Second timer, 1usec
     timerAttachInterrupt(sample_timer, handleSampleTimer, true);
-    timerAlarmWrite(sample_timer, 100000, true);   // Alarm every 1/10 second
+    timerAlarmWrite(sample_timer, 100000, true);  // Alarm every 1/10 second
 }
 
 // Calculate engine RPM from number of interupts per time
@@ -79,7 +99,7 @@ double ReadRPM() {
     //  return 1234.0;
     uint64_t RPM = 0;
 
-   // uint32_t filter_depth = 3;  // Low pass filter. Noot too big as the RPM is sampled every second or so.
+    // uint32_t filter_depth = 3;  // Low pass filter. Noot too big as the RPM is sampled every second or so.
 
     // The pulley ratio determines how fast the alternator turns WRT the engine crank.
     // I use the pitch circle diameter to get the best result.
@@ -109,9 +129,9 @@ double ReadRPM() {
         period = (now - Last_int_time) * 1000;  // uSecs taken for PeriodCount.
     }
 
-   // EngineRPM = ((EngineRPM * (filter_depth - 1)) + (frequency * rpm_calib)) / filter_depth;  // This implements a low pass filter to eliminate spike for RPM measurements
+    // EngineRPM = ((EngineRPM * (filter_depth - 1)) + (frequency * rpm_calib)) / filter_depth;  // This implements a low pass filter to eliminate spike for RPM measurements
     EngineRPM = frequency * rpm_calib;
 
-   // Console->printf("F %llu Calib %f\n", frequency, rpm_calib);
+    // Console->printf("F %llu Calib %f\n", frequency, rpm_calib);
     return (EngineRPM);
 }

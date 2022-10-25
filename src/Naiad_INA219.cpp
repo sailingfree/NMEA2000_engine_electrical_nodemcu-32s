@@ -1,24 +1,44 @@
-#include <Adafruit_INA219.h>
-#include <Wire.h>
-#include <Naiad_INA219.h>
+/*
+Copyright (c) 2022 Peter Martin www.naiadhome.com
 
-Naiad_INA219::Naiad_INA219(uint8_t addr, const char * name, BatteryInstance_t i) 
+Permission is hereby granted, free of charge, to any person obtaining a copy of
+this software and associated documentation files (the "Software"), to deal in
+the Software without restriction, including without limitation the rights to use,
+copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the
+Software, and to permit persons to whom the Software is furnished to do so,
+subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
+OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+*/
+
+#include <Adafruit_INA219.h>
+#include <Naiad_INA219.h>
+#include <Wire.h>
+
+Naiad_INA219::Naiad_INA219(uint8_t addr, const char* name, BatteryInstance_t i)
     : Adafruit_INA219(addr) {
-        // Call the base class constructor with the address
-        sensor_name = name;
-        instance = i;
+    // Call the base class constructor with the address
+    sensor_name = name;
+    instance = i;
 }
 
-
-/* 
-* Calculate the calibration value using the algorithm in the data sheet.
-* Borrowed from here https://github.com/pcbreflux/espressif/blob/master/esp32/app/ESP32_ble_i2c_ina219/main/INA219.cpp
-*/
+/*
+ * Calculate the calibration value using the algorithm in the data sheet.
+ * Borrowed from here https://github.com/pcbreflux/espressif/blob/master/esp32/app/ESP32_ble_i2c_ina219/main/INA219.cpp
+ */
 uint16_t calibrate(float shunt_val, float v_shunt_max, float v_bus_max, float i_max_expected) {
     float r_shunt;
     float current_lsb;
     float power_lsb;
-    uint16_t cal;    
+    uint16_t cal;
     uint16_t digits;
     float min_lsb, swap;
 #ifdef INA219_DEBUG
@@ -106,7 +126,6 @@ uint16_t calibrate(float shunt_val, float v_shunt_max, float v_bus_max, float i_
  *  @brief  Configures to INA219 to be able to measure up to 16V at 30A
  */
 void Naiad_INA219::setCalibration_16V_30A() {
- 
     ina219_calValue = calibrate(SHUNT_R, SHUNT_MAX_V, BUS_MAX_V, MAX_CURRENT);
 
     // Set multipliers to convert raw current/power values
@@ -129,7 +148,7 @@ void Naiad_INA219::setCalibration_16V_30A() {
     _success = config_reg.write(config, 2);
 }
 
-BatteryStat read_ina219(Naiad_INA219 & ina219) {
+BatteryStat read_ina219(Naiad_INA219& ina219) {
     BatteryStat result;
 
     float shuntvoltage = 0;
@@ -143,7 +162,7 @@ BatteryStat read_ina219(Naiad_INA219 & ina219) {
     current_mA = ina219.getCurrent_mA();
     power_mW = ina219.getPower_mW();
     loadvoltage = busvoltage + (shuntvoltage / 1000);
-    const char * sensor = ina219.sensor_name;
+    const char* sensor = ina219.sensor_name;
 
 #ifdef INA219_DEBUG
     Serial.printf("Battery %s\n", sensor);
@@ -164,9 +183,9 @@ BatteryStat read_ina219(Naiad_INA219 & ina219) {
     Serial.println(" mW");
     Serial.println("");
 #endif
-    result.voltage = busvoltage;            // in Nmv
-    result.current = current_mA / 1000.0;     // In Amps
-    result.temperature = 273 + 15;          // Just a guess in K
+    result.voltage = busvoltage;           // in Nmv
+    result.current = current_mA / 1000.0;  // In Amps
+    result.temperature = 273 + 15;         // Just a guess in K
     result.instance = ina219.instance;
 
     return result;
