@@ -8,8 +8,8 @@
 #define MAX_CURRENT 32          // max expected current from house battery
 
 enum BatteryInstance_t {
-    BAT_HOUSE,
-    BAT_ENGINE
+    BAT_HOUSE = 0,
+    BAT_ENGINE = 1
 };
 
 //#define INA219_DEBUG
