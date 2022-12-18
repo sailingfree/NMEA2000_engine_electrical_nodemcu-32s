@@ -64,6 +64,7 @@
  /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/freertos/port/xtensa/include/freertos/portbenchmark.h \
  /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/xtensa/include/xtensa/xtensa_api.h \
  /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/xtensa/include/xtensa/xtensa_context.h \
+ /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/freertos/port/xtensa/include/freertos/portmacro_deprecated.h \
  /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/freertos/include/freertos/mpu_wrappers.h \
  /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/freertos/include/freertos/task.h \
  /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/freertos/include/freertos/list.h \
@@ -80,6 +81,7 @@
  /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/cores/esp32/esp32-hal-matrix.h \
  /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/cores/esp32/esp32-hal-uart.h \
  /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/cores/esp32/esp32-hal-gpio.h \
+ /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/variants/nodemcu-32s/pins_arduino.h \
  /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/cores/esp32/esp32-hal-touch.h \
  /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/cores/esp32/esp32-hal-dac.h \
  /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/driver/include/driver/gpio.h \
@@ -95,16 +97,9 @@
  /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/cores/esp32/esp32-hal-timer.h \
  /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/cores/esp32/esp32-hal-bt.h \
  /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/cores/esp32/esp32-hal-psram.h \
+ /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/cores/esp32/esp32-hal-rgb-led.h \
  /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/cores/esp32/esp32-hal-cpu.h \
- /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/soc/esp32/include/soc/rtc_io_reg.h \
- /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/soc/esp32/include/soc/rtc_cntl_reg.h \
- /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/soc/include/soc/rtc_io_periph.h \
- /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/soc/esp32/include/soc/rtc_io_channel.h \
- /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/soc/esp32/include/soc/rtc_io_struct.h \
- /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/soc/esp32/include/soc/rtc_cntl_struct.h \
- /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/soc/esp32/include/soc/sens_struct.h \
- /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/soc/esp32/include/soc/sens_reg.h \
- /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/driver/esp32/include/driver/dac.h \
+ /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/soc/esp32/include/soc/dac_channel.h \
  /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/driver/include/driver/dac_common.h \
  /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/hal/include/hal/dac_types.h \
  /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/hal/include/hal/adc_types.h

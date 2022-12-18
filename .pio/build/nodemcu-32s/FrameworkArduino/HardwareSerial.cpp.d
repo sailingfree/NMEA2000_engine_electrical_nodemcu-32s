@@ -71,6 +71,7 @@
  /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/freertos/port/xtensa/include/freertos/portbenchmark.h \
  /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/xtensa/include/xtensa/xtensa_api.h \
  /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/xtensa/include/xtensa/xtensa_context.h \
+ /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/freertos/port/xtensa/include/freertos/portmacro_deprecated.h \
  /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/freertos/include/freertos/mpu_wrappers.h \
  /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/freertos/include/freertos/task.h \
  /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/freertos/include/freertos/list.h \
@@ -102,5 +103,9 @@
  /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/cores/esp32/esp32-hal-timer.h \
  /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/cores/esp32/esp32-hal-bt.h \
  /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/cores/esp32/esp32-hal-psram.h \
+ /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/cores/esp32/esp32-hal-rgb-led.h \
  /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/cores/esp32/esp32-hal-cpu.h \
- /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/cores/esp32/HWCDC.h
+ /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/cores/esp32/HWCDC.h \
+ /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/driver/include/driver/uart.h \
+ /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/esp_ringbuf/include/freertos/ringbuf.h \
+ /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/hal/include/hal/uart_types.h

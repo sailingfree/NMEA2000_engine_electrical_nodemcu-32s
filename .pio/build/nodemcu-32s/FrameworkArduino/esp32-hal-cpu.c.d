@@ -1,6 +1,6 @@
 .pio/build/nodemcu-32s/FrameworkArduino/esp32-hal-cpu.c.o: \
  /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/cores/esp32/esp32-hal-cpu.c \
- /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/config/sdkconfig.h \
+ /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/dio_qspi/include/sdkconfig.h \
  /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/freertos/include/freertos/FreeRTOS.h \
  /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/freertos/include/esp_additions/freertos/FreeRTOSConfig.h \
  /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/esp_common/include/esp_compiler.h \
@@ -58,6 +58,7 @@
  /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/freertos/port/xtensa/include/freertos/portbenchmark.h \
  /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/xtensa/include/xtensa/xtensa_api.h \
  /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/xtensa/include/xtensa/xtensa_context.h \
+ /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/freertos/port/xtensa/include/freertos/portmacro_deprecated.h \
  /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/freertos/include/freertos/mpu_wrappers.h \
  /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/freertos/include/freertos/semphr.h \
  /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/freertos/include/freertos/queue.h \
@@ -94,6 +95,7 @@
  /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/cores/esp32/esp32-hal-matrix.h \
  /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/cores/esp32/esp32-hal-uart.h \
  /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/cores/esp32/esp32-hal-gpio.h \
+ /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/variants/nodemcu-32s/pins_arduino.h \
  /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/cores/esp32/esp32-hal-touch.h \
  /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/cores/esp32/esp32-hal-dac.h \
  /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/driver/include/driver/gpio.h \
@@ -109,6 +111,7 @@
  /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/cores/esp32/esp32-hal-timer.h \
  /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/cores/esp32/esp32-hal-bt.h \
  /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/cores/esp32/esp32-hal-psram.h \
+ /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/cores/esp32/esp32-hal-rgb-led.h \
  /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/cores/esp32/esp32-hal-cpu.h \
  /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/freertos/port/xtensa/include/freertos/xtensa_timer.h \
  /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/freertos/port/xtensa/include/freertos/xtensa_rtos.h \

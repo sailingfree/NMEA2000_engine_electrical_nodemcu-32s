@@ -6,7 +6,7 @@
  /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/soc/esp32/include/soc/soc.h \
  /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/esp_common/include/esp_assert.h \
  /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/newlib/platform_include/assert.h \
- /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/config/sdkconfig.h \
+ /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/dio_qspi/include/sdkconfig.h \
  /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/esp_common/include/esp_bit_defs.h \
  /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/soc/esp32/include/soc/dport_access.h \
  /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/esp_common/include/esp_attr.h \
@@ -64,6 +64,7 @@
  /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/freertos/port/xtensa/include/freertos/portbenchmark.h \
  /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/xtensa/include/xtensa/xtensa_api.h \
  /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/xtensa/include/xtensa/xtensa_context.h \
+ /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/freertos/port/xtensa/include/freertos/portmacro_deprecated.h \
  /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/freertos/include/freertos/mpu_wrappers.h \
  /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/freertos/include/freertos/queue.h \
  /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/freertos/include/freertos/task.h \
@@ -101,6 +102,7 @@
  /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/cores/esp32/esp32-hal-matrix.h \
  /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/cores/esp32/esp32-hal-uart.h \
  /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/cores/esp32/esp32-hal-gpio.h \
+ /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/variants/nodemcu-32s/pins_arduino.h \
  /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/cores/esp32/esp32-hal-touch.h \
  /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/cores/esp32/esp32-hal-dac.h \
  /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/cores/esp32/esp32-hal-adc.h \
@@ -112,6 +114,7 @@
  /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/cores/esp32/esp32-hal-timer.h \
  /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/cores/esp32/esp32-hal-bt.h \
  /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/cores/esp32/esp32-hal-psram.h \
+ /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/cores/esp32/esp32-hal-rgb-led.h \
  /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/cores/esp32/esp32-hal-cpu.h \
  /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/cores/esp32/esp8266-compat.h \
  /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/cores/esp32/stdlib_noniso.h \
@@ -137,7 +140,7 @@
  /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/hal/include/hal/esp_flash_err.h \
  /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/spi_flash/include/esp_spi_flash.h \
  /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/spi_flash/include/esp_spi_flash_counters.h \
- /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/variants/nodemcu-32s/pins_arduino.h \
+ /Users/petermartin_2/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/esp_hw_support/include/soc/esp32/spiram.h \
  /Users/petermartin_2/Documents/Arduino/libraries/NMEA2000/src/N2kMsg.h \
  /Users/petermartin_2/Documents/Arduino/libraries/NMEA2000/src/N2kCANMsg.h \
  /Users/petermartin_2/Documents/Arduino/libraries/NMEA2000/src/N2kMsg.h \

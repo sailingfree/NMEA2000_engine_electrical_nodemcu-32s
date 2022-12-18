@@ -3,3 +3,9 @@
 .vscode/c_cpp_properties.json
 .vscode/launch.json
 .vscode/ipch
+.pio/build/project.checksum
+.pio/build/project.checksum
+.pio/build/nodemcu-32s/.sconsign39.dblite
+.pio/build/nodemcu-32s/firmware.bin
+.pio/build/nodemcu-32s/firmware.elf
+.pio/build/nodemcu-32s/firmware.map
