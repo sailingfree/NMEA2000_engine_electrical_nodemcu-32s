@@ -103,8 +103,7 @@ const IPAddress AP_local_ip(192, 168, 15, 1);  // Static address for AP
 const IPAddress AP_gateway(192, 168, 15, 1);
 const IPAddress AP_subnet(255, 255, 255, 0);
 
-String wifi_mode_string = GwGetVal(WIFIMODE, "0");  // 0 = off, 1 = ap, 2 = client
-Gw_WiFi_Mode wifiType = (Gw_WiFi_Mode)wifi_mode_string.toInt();
+Gw_WiFi_Mode wifiType;
 
 // Define the console to output to serial at startup.
 // this can get changed later, eg in the gwshell.
@@ -303,6 +302,7 @@ void handleBoat() {
 
 /**
  * @name: N2kToYD_Can
+ * Convert an NMEA2000 message to Yach Data NMEA format
  */
 void N2kToYD_Can(const tN2kMsg &msg, char *MsgBuf) {
     unsigned long DaysSince1970 = BoatData.DaysSince1970;
@@ -325,12 +325,15 @@ void N2kToYD_Can(const tN2kMsg &msg, char *MsgBuf) {
     canId = msg.Source & 0xff;
     PF = (msg.PGN >> 8) & 0xff;
 
+    //Console->printf("YD: canId %d PGN %d (0x%x) PF %d (0x%x) ", canId, msg.PGN, msg.PGN, PF, PF);
+
     if (PF < 240) {
         canId = (canId | ((msg.Destination & 0xff) << 8));
         canId = (canId | (msg.PGN << 8));
     } else {
         canId = (canId | (msg.PGN << 8));
     }
+   // Console->printf(" Sending canID %d 0x%x\n", canId, canId);
 
     canId = (canId | (msg.Priority << 26));
 
@@ -416,6 +419,10 @@ void setup() {
     // get CPU calibration timing
     calibrateCpu();
 
+    // Get the configured wifi type
+    String wifi_mode_string = GwGetVal(WIFIMODE, "0");  // 0 = off, 1 = ap, 2 = client
+    wifiType = (Gw_WiFi_Mode)wifi_mode_string.toInt();
+
     // setup the WiFI map from the preferences
     wifiCreds[0].ssid = GwGetVal(SSID1);
     wifiCreds[0].pass = GwGetVal(SSPW1);
@@ -424,6 +431,8 @@ void setup() {
 
     // Setup params if we are to be an AP
     AP_password = GwGetVal(GWPASS);
+
+    Console->printf("WifiType = %d\n", wifiType);
 
     if (wifiType == WiFi_Client) {
         Console->println("Start WLAN Client");  // WiFi Mode Client
@@ -529,7 +538,13 @@ void setup() {
     // Set product information for both devices
     Model += GWMODE;
 
-    NMEA2000.SetProductInformation(host_name.c_str(),     // Manufacturer's Model serial code
+    String instance1(host_name);
+    String instance2(host_name);
+
+    instance1 += "_0";
+    instance2 += "_1";
+
+    NMEA2000.SetProductInformation(instance1.c_str(),     // Manufacturer's Model serial code
                                    100,                   // Manufacturer's product code
                                    Model.c_str(),         // Manufacturer's Model ID
                                    "1.0.0 (2021-06-11)",  // Manufacturer's Software version code
@@ -539,7 +554,7 @@ void setup() {
                                    0xff,                  // Sertification level - use default
                                    BAT_HOUSE);
 
-    NMEA2000.SetProductInformation(host_name.c_str(),     // Manufacturer's Model serial code
+    NMEA2000.SetProductInformation(instance2.c_str(),     // Manufacturer's Model serial code
                                    100,                   // Manufacturer's product code
                                    Model.c_str(),         // Manufacturer's Model ID
                                    "1.0.0 (2021-06-11)",  // Manufacturer's Software version code
@@ -581,12 +596,10 @@ void setup() {
     NMEA2000.ExtendReceiveMessages(ReceiveMessages);
     NMEA2000.Open();
 
-    IdleInit();
 
     // Get the RPM calibration values and setup the timer
     InitRPM();
 
-    delay(200);
     Serial.println("Finished setup");
 }
 
@@ -653,23 +666,35 @@ void SendN2kBattery() {
     }
 }
 
-void SendN2kEngineFast() {
+void SendN2kEngineFast()
+{
     static unsigned long FastDataUpdated = InitNextUpdate(FastDataUpdatePeriod, MiscSendOffset);
+    static unsigned long SlowDataUpdated = InitNextUpdate(SlowDataUpdatePeriod, MiscSendOffset);
     tN2kMsg N2kMsg;
-    double rpm = ReadRPM();
 
-    // Console->printf("RPM %f\n", rpm);
-    if (IsTimeToUpdate(FastDataUpdated)) {
+    static double filtered_rpm = 0.0;
+    static const uint32_t filter_depth = 4;
+    if (IsTimeToUpdate(FastDataUpdated))
+    {
         SetNextUpdate(FastDataUpdated, FastDataUpdatePeriod);
-        if (rpm > 0.0) {
-            SetN2kEngineParamRapid(N2kMsg, 0,
-                                   rpm,
-                                   N2kDoubleNA,
-                                   0);
+        double currentRpm = ReadRPM();
 
-            NMEA2000.SendMsg(N2kMsg);
-            GwSendYD(N2kMsg);
-        }
+        // This implements a low pass filter to smooth the inherent jitter in the RPM measurement
+        // caused by the periodic acceleration and deceleration of the engin every revolution
+        // which is a result of the 4 stroke deisel engine
+        filtered_rpm = ((filtered_rpm * (filter_depth - 1)) + currentRpm) / filter_depth;
+
+        // And adjust so we only report to the nearest 10 RPM, no point with super precision!
+        filtered_rpm = round(filtered_rpm / 10.0) * 10.0;
+
+        SetN2kEngineParamRapid(N2kMsg, 0,
+            filtered_rpm,
+            N2kDoubleNA,
+            0);
+
+        NMEA2000.SendMsg(N2kMsg);
+        GwSendYD(N2kMsg);
+
     }
 }
 
@@ -687,7 +712,7 @@ void handleTelnet() {
         telnetClient = telnet.available();
         if (telnetClient) {
             // Set up the client
-            // telnetClient.setNoDelay(true); // More faster
+            telnetClient.setNoDelay(true); // More faster
             telnetClient.flush();  // clear input buffer, else you get strange characters
             setShellSource(&telnetClient);
         }
@@ -697,35 +722,6 @@ void handleTelnet() {
         setShellSource(&Serial);
         return;
     }
-
-    /*
-    // read and process data one char at a time to avoid blocking main loop
-    if(telnetClient.available()) {
-        unsigned char r = telnetClient.read();
-
-        // End of line checks "\r\n"
-        if(last == '\r' && r == '\n') {
-            // End of line
-            // Do something with it
-            Console->print(command);
-
-
-            if(command == "exit") {
-                Console = &Serial;
-                telnetClient.stop();
-            }
-            command = "";
-            last = ' ';
-        } else {
-            last = r;
-            if(isprint(r)) {
-                command += char(r);
-            } else {
-                Console->printf("TNX: 0x%x %d (0x%x %d)\n", r, r, last, last);
-            }
-        }
-    }
-    */
 }
 
 void displayBoat(Stream &stream) {
@@ -877,7 +873,7 @@ void loop() {
     handleShell();
 
     // send the N2K messages for the data we originate
-    // SendN2kEngineFast();
+    SendN2kEngineFast();
     SendN2kBattery();
 
     // Handle any n2k messages we are interested in
