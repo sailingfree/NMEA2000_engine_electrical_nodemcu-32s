@@ -28,6 +28,7 @@ Naiad_INA219::Naiad_INA219(uint8_t addr, const char* name, BatteryInstance_t i)
     // Call the base class constructor with the address
     sensor_name = name;
     instance = i;
+    present = this->success();
 }
 
 /*
@@ -148,6 +149,10 @@ void Naiad_INA219::setCalibration_16V_30A() {
     _success = config_reg.write(config, 2);
 }
 
+bool Naiad_INA219::ispresent() {
+    return present;
+}
+
 BatteryStat read_ina219(Naiad_INA219& ina219) {
     BatteryStat result;
 
@@ -156,6 +161,16 @@ BatteryStat read_ina219(Naiad_INA219& ina219) {
     float current_mA = 0;
     float loadvoltage = 0;
     float power_mW = 0;
+    
+    if(! ina219.ispresent()) {
+        result.current = current_mA;
+        result.voltage = busvoltage;
+        result.instance = ina219.instance;
+        result.name = ina219.sensor_name;
+        result.temperature = 0;
+
+        return result;
+    }
 
     shuntvoltage = ina219.getShuntVoltage_mV();
     busvoltage = ina219.getBusVoltage_V();

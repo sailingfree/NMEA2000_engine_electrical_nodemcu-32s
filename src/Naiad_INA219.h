@@ -45,6 +45,10 @@ class Naiad_INA219 : public Adafruit_INA219 {
     BatteryInstance_t instance;
     Naiad_INA219(uint8_t addr = INA219_ADDRESS, const char* name = "", BatteryInstance_t i = BAT_HOUSE);
     void setCalibration_16V_30A();
+    bool ispresent();
+
+    private:
+        bool present;
 };
 
 typedef struct batteryStat {

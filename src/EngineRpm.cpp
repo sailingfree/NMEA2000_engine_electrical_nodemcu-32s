@@ -36,6 +36,7 @@ OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include <Arduino.h>
 #include <GwPrefs.h>
+#include <freq_adc_fft .h>
 
 extern Stream *Console;
 
@@ -74,7 +75,7 @@ void InitRPM() {
     poles = GwGetVal(ALTPOLES, "12").toDouble();
     main_dia = GwGetVal(ENGINEDIA, "96").toDouble();
     alt_dia = GwGetVal(ALTDIA, "67").toDouble();
-    belt_depth = 8.0;
+    belt_depth = 0;
 
     Serial.printf("InitRPM: %f %f %f\n", poles, main_dia, alt_dia);
     pinMode(Engine_RPM_Pin, INPUT_PULLUP);                                            // sets pin high
@@ -107,6 +108,7 @@ double ReadRPM() {
     unsigned long period;
 
     now = millis();  // Current sample time
+    /*
     portENTER_CRITICAL(&mux);
     if (PeriodCount > 0) {
         frequency = 1000000 / PeriodCount;  // PeriodCount in 0.000001 of a second
@@ -114,10 +116,13 @@ double ReadRPM() {
         frequency = 0LL;
     }
     portEXIT_CRITICAL(&mux);
+    */
 
-    if (now > Last_int_time + 200 || frequency > 2000LL || frequency < 0LL) {
-        EngineRPM = 0.0;  // No signals or stupide frequency RPM=0;
-    } else {
+    frequency = (uint64_t) readFreqAdcFft();
+
+   // if (now > Last_int_time + 200 || frequency > 2000LL || frequency < 0LL) {
+   //     EngineRPM = 0.0;  // No signals or stupid frequency RPM=0;
+   // } else {
         // Convert the frequency of the alternator output to alternator revolutions
         EngineRPM = frequency / (poles / 2);
 
@@ -127,9 +132,19 @@ double ReadRPM() {
         // Convert frequency in pulses per second to revolutions per minute
         EngineRPM *= 60;
 
-        // Because we are trigerring on both rising and falling edges (CHANGE)
-        // divide the result by 2
-        EngineRPM /= 2.0;
-    }
+        // Apply a moving average filter
+        static const uint32_t window_size = 4;
+        static uint32_t index = 0;
+        static double readings[window_size ];
+        double averaged;
+        static double sum;
+
+        sum = sum - readings[index];
+        readings[index] = EngineRPM;
+        sum += EngineRPM;
+        index = ++index % window_size;
+        EngineRPM = sum / window_size;
+        Serial.printf("RPM %f\n", EngineRPM);
+//    }
     return (EngineRPM);
 }

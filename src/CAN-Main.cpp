@@ -510,15 +510,9 @@ void setup() {
     // Init the INA219 voltage and current sensors
     if (!ina219_house.begin()) {
         Serial.println("Failed to find INA219 chip HOUSE");
-        while (1) {
-            delay(10);
-        }
     }
     if (!ina219_engine.begin()) {
         Serial.println("Failed to find INA219 chip ENGINE");
-        while (1) {
-            delay(10);
-        }
     }
 
     /// Calibrate for 16V 30A with a 0.0025 Ohm shunt
@@ -673,7 +667,7 @@ void SendN2kEngineFast()
     tN2kMsg N2kMsg;
 
     static double filtered_rpm = 0.0;
-    static const uint32_t filter_depth = 4;
+    static const uint32_t filter_depth = 1;
     if (IsTimeToUpdate(FastDataUpdated))
     {
         SetNextUpdate(FastDataUpdated, FastDataUpdatePeriod);
@@ -684,8 +678,8 @@ void SendN2kEngineFast()
         // which is a result of the 4 stroke deisel engine
         filtered_rpm = ((filtered_rpm * (filter_depth - 1)) + currentRpm) / filter_depth;
 
-        // And adjust so we only report to the nearest 10 RPM, no point with super precision!
-        filtered_rpm = round(filtered_rpm / 10.0) * 10.0;
+        // And adjust so we only report to the nearest 5 RPM, no point with super precision!
+        filtered_rpm = round(filtered_rpm / 5.0) * 5.0;
 
         SetN2kEngineParamRapid(N2kMsg, 0,
             filtered_rpm,
