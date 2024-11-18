@@ -855,10 +855,6 @@ void loop() {
     }
     Console->print(s.data);
 
-    if (wifiType != WiFi_off) {
-        ArduinoOTA.handle();
-    }
-
     // every few hundred msecs
 
     if (millis() >= mTimeToSec) {
@@ -886,9 +882,6 @@ void loop() {
     // send the N2K messages for the data we originate
     SendN2kEngineFast();
     SendN2kBattery();
-
-    // Handle any n2k messages we are interested in
-    NMEA2000.ParseMessages();
 
     // Handle any address changes needed
     int SourceAddress = NMEA2000.GetN2kSource();
