@@ -35,8 +35,8 @@
 // 4096      | 580
 
 // define the pin we are going to read the analogue input
-#define ANALOGUE_PIN    (36)
-
+// Only use ADC1!
+#define ANALOGUE_PIN    (33)   // ADC1_5
 
 // Read some ADC samples and run an FFT to get the fundamental frequency
 float readFreqAdcFft(void);

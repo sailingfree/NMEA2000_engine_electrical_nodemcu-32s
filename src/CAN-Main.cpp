@@ -73,7 +73,8 @@ using LinkedList = std::list<T>;
 
 // Global objects and variables
 String host_name;
-String Model = "Naiad N2K Electrical";
+String Model1 = "Naiad N2K Engine";     // RPM, alternator
+String Model2 = "Naiad N2K Eelectrical"; // House battery
 
 Stream *OutputStream = NULL;  //&Serial;
 
@@ -357,6 +358,7 @@ WiFiUDP udp;
 
 // Send to Yacht device clients over udp using the broadcast address
 void GwSendYD(const tN2kMsg &N2kMsg) {
+    return;
     if (wifiType != WiFi_off) {
         IPAddress udpAddress = WiFi.broadcastIP();
         udpAddress.fromString("192.168.15.255");
@@ -529,9 +531,6 @@ void setup() {
     NMEA2000.SetMode(tNMEA2000::N2km_ListenAndNode, 50);
     pN2kDeviceList = new tN2kDeviceList(&NMEA2000);
 
-    // Set product information for both devices
-    Model += GWMODE;
-
     String instance1(host_name);
     String instance2(host_name);
 
@@ -540,7 +539,7 @@ void setup() {
 
     NMEA2000.SetProductInformation(instance1.c_str(),     // Manufacturer's Model serial code
                                    100,                   // Manufacturer's product code
-                                   Model.c_str(),         // Manufacturer's Model ID
+                                   Model1.c_str(),         // Manufacturer's Model ID
                                    "1.0.0 (2021-06-11)",  // Manufacturer's Software version code
                                    "1.0.0 (2021-06-11",   // Manufacturer's Model version
                                    0xff,                  // load equivalency - use default
@@ -550,7 +549,7 @@ void setup() {
 
     NMEA2000.SetProductInformation(instance2.c_str(),     // Manufacturer's Model serial code
                                    100,                   // Manufacturer's product code
-                                   Model.c_str(),         // Manufacturer's Model ID
+                                   Model2.c_str(),         // Manufacturer's Model ID
                                    "1.0.0 (2021-06-11)",  // Manufacturer's Software version code
                                    "1.0.0 (2021-06-11",   // Manufacturer's Model version
                                    0xff,                  // load equivalency - use default
@@ -584,15 +583,17 @@ void setup() {
 
     Console->printf("NodeAddress=%d\n", NodeAddress);
 
-    NMEA2000.SetMode(tNMEA2000::N2km_ListenAndNode, NodeAddress);
+    NMEA2000.SetMode(tNMEA2000::N2km_NodeOnly, NodeAddress);
 
     NMEA2000.ExtendTransmitMessages(TransmitMessages);
-    NMEA2000.ExtendReceiveMessages(ReceiveMessages);
+//    NMEA2000.ExtendReceiveMessages(ReceiveMessages);
     NMEA2000.Open();
 
 
     // Get the RPM calibration values and setup the timer
     InitRPM();
+
+    IdleInit();
 
     Serial.println("Finished setup");
 }
@@ -644,6 +645,25 @@ void SendN2kBatteryDetails(BatteryStat battery) {
     GwSendYD(N2kMsg);
 }
 
+void SendN2kEngineSlow(double voltage) {
+    tN2kMsg N2kMsg;
+
+    SetN2kEngineDynamicParam(N2kMsg, 0,
+                             N2kDoubleNA,      // Oil Pressure
+                             N2kDoubleNA,      // Oil temp
+                             CToKelvin(80.0),  // Coolant temp
+                             voltage,          // alternator voltage
+                             N2kDoubleNA,      // fule rate
+                             N2kDoubleNA,      // engine hours
+                             N2kDoubleNA,      // coolant pressure
+                             N2kDoubleNA,      // fuel pressure
+                             N2kInt8NA, 
+                             N2kInt8NA, 
+                             true);
+    NMEA2000.SendMsg(N2kMsg);
+    GwSendYD(N2kMsg);
+}
+
 // Read and send the status for both batteries
 void SendN2kBattery() {
     static unsigned long SlowDataUpdated = InitNextUpdate(SlowDataUpdatePeriod, MiscSendOffset);
@@ -652,11 +672,18 @@ void SendN2kBattery() {
         SetNextUpdate(SlowDataUpdated, SlowDataUpdatePeriod);
         BatteryStat battery;
 
+        // House battery sent as voltage first
+        battery = read_ina219(ina219_house);
+        SendN2kBatteryDetails(battery);
+
+        // engine battery second
         battery = read_ina219(ina219_engine);
         SendN2kBatteryDetails(battery);
 
-        battery = read_ina219(ina219_house);
-        SendN2kBatteryDetails(battery);
+        // And send the engine battery as the alternator voltage so
+        // the B&G Triton display can show it
+        // (The triton can only show one battery voltage :())
+        SendN2kEngineSlow(battery.voltage);
     }
 }
 
@@ -666,23 +693,13 @@ void SendN2kEngineFast()
     static unsigned long SlowDataUpdated = InitNextUpdate(SlowDataUpdatePeriod, MiscSendOffset);
     tN2kMsg N2kMsg;
 
-    static double filtered_rpm = 0.0;
-    static const uint32_t filter_depth = 1;
     if (IsTimeToUpdate(FastDataUpdated))
     {
         SetNextUpdate(FastDataUpdated, FastDataUpdatePeriod);
-        double currentRpm = ReadRPM();
-
-        // This implements a low pass filter to smooth the inherent jitter in the RPM measurement
-        // caused by the periodic acceleration and deceleration of the engin every revolution
-        // which is a result of the 4 stroke deisel engine
-        filtered_rpm = ((filtered_rpm * (filter_depth - 1)) + currentRpm) / filter_depth;
-
-        // And adjust so we only report to the nearest 5 RPM, no point with super precision!
-        filtered_rpm = round(filtered_rpm / 5.0) * 5.0;
+        double rpm = ReadRPM();
 
         SetN2kEngineParamRapid(N2kMsg, 0,
-            filtered_rpm,
+            rpm,
             N2kDoubleNA,
             0);
 

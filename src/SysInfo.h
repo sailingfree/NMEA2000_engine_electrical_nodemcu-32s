@@ -28,7 +28,7 @@ OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 extern String WifiMode, WifiIP, WifiSSID;
 extern String host_name, macAddress;
-extern String Model;
+extern String Model1, Model2;
 
 void getNetInfo(Stream& s);
 void getSysInfo(Stream& s);

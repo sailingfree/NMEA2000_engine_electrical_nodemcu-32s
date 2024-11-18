@@ -8,7 +8,9 @@
 // The calibration value is calculated using user configured options so it
 // can be used with other engines/alternatiors
 //
-// A timer ISR regulaly samples the frequency, applies a low pass filter
+// A timer ISR regulaly samples the frequency, applies a low pass 
+
+
 // and makes the RPM value available for external functions to read.
 // Makes use of code from https://github.com/AK-Homberger/NMEA2000-Data-Sender
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -38,7 +40,13 @@ OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <GwPrefs.h>
 #include <freq_adc_fft .h>
 
-extern Stream *Console;
+extern Stream* Console;
+
+// select the method of reading RPM
+#define RPM_TYPE_INTERRUPT 1    // use an interrupt handler 
+#define RPM_TYPE_ADC_FFT 2      // Use the ADC and FFT method
+
+#define RPM_TYPE RPM_TYPE_ADC_FFT
 
 // RPM data. Generator RPM is measured on connector "W"
 static double poles;
@@ -46,17 +54,17 @@ static double main_dia;    // mm
 static double alt_dia;     // mm
 static double belt_depth;  // mm
 
-#define Engine_RPM_Pin 14  // Engine RPM is measured as interrupt on GPIO 22
+#define Engine_RPM_Pin 33  // Engine RPM is measured as interrupt on GPIO 33
 
 volatile uint64_t StartValue;   // First interrupt value
 volatile uint64_t PeriodCount;  // period in counts of 0.000001 of a second
 unsigned long Last_int_time = 0;
-hw_timer_t *timer = NULL;                         // pointer to a variable of type hw_timer_t
+hw_timer_t* timer = NULL;                         // pointer to a variable of type hw_timer_t
 portMUX_TYPE mux = portMUX_INITIALIZER_UNLOCKED;  // synchs between main code and interrupt
 
 // RPM Event Interrupt
 // Enters on falling edge
-uint32_t filter_depth = 64;
+uint32_t filter_depth = 1;
 //=======================================
 void IRAM_ATTR handleInterrupt() {
     portENTER_CRITICAL_ISR(&mux);
@@ -79,9 +87,9 @@ void InitRPM() {
 
     Serial.printf("InitRPM: %f %f %f\n", poles, main_dia, alt_dia);
     pinMode(Engine_RPM_Pin, INPUT_PULLUP);                                            // sets pin high
-    
+
     // attaches pin to interrupt. We trigger on rising and falling edges
-    attachInterrupt(digitalPinToInterrupt(Engine_RPM_Pin), handleInterrupt, CHANGE);  
+    attachInterrupt(digitalPinToInterrupt(Engine_RPM_Pin), handleInterrupt, HIGH);
 
     // 0 = first timer
     // 80 is prescaler so 80MHZ divided by 80 = 1MHZ signal ie 0.000001 of a second
@@ -108,43 +116,33 @@ double ReadRPM() {
     unsigned long period;
 
     now = millis();  // Current sample time
-    /*
+#if RPM_TYPE == RPM_TYPE_INTERRUPT
     portENTER_CRITICAL(&mux);
     if (PeriodCount > 0) {
         frequency = 1000000 / PeriodCount;  // PeriodCount in 0.000001 of a second
-    } else {
+    }
+    else {
         frequency = 0LL;
     }
     portEXIT_CRITICAL(&mux);
-    */
+#else
+    frequency = (uint64_t)readFreqAdcFft();
+#endif
 
-    frequency = (uint64_t) readFreqAdcFft();
+    // Convert the frequency of the alternator output to alternator revolutions
+    EngineRPM = frequency / (poles / 2);
 
-   // if (now > Last_int_time + 200 || frequency > 2000LL || frequency < 0LL) {
-   //     EngineRPM = 0.0;  // No signals or stupid frequency RPM=0;
-   // } else {
-        // Convert the frequency of the alternator output to alternator revolutions
-        EngineRPM = frequency / (poles / 2);
+    // Adjust for the difference in pulley diameters
+    EngineRPM /= pulley_ratio;
 
-        // Adjust for the difference in pulley diameters
-        EngineRPM /= pulley_ratio;
+    // Convert frequency in pulses per second to revolutions per minute
+    EngineRPM *= 60;
 
-        // Convert frequency in pulses per second to revolutions per minute
-        EngineRPM *= 60;
-
-        // Apply a moving average filter
-        static const uint32_t window_size = 4;
-        static uint32_t index = 0;
-        static double readings[window_size ];
-        double averaged;
-        static double sum;
-
-        sum = sum - readings[index];
-        readings[index] = EngineRPM;
-        sum += EngineRPM;
-        index = ++index % window_size;
-        EngineRPM = sum / window_size;
-        Serial.printf("RPM %f\n", EngineRPM);
-//    }
+    // Apply a low pass filter to remove noise?
+    static double rpm = 0;
+    double w = 6.0;
+    rpm = ((rpm * (w - 1.0)) + (EngineRPM)) / w;
+    //Serial.printf("RPM %f\n", rpm);
+    
     return (EngineRPM);
 }

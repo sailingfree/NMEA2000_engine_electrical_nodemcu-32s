@@ -72,7 +72,7 @@ void getSysInfo(Stream &s) {
     uint32_t heapUsedPc = (heap - freeheap) * 100 / heap;
 
     uint8_t chiprev = esp.getChipRevision();
-    const char *model = esp.getChipModel();
+    const char *chipModel = esp.getChipModel();
     uint32_t sketchSize = esp.getSketchSize();
     uint32_t freeSketch = esp.getFreeSketchSpace();
     uint32_t flashsize = esp.getFlashChipSize();
@@ -82,14 +82,15 @@ void getSysInfo(Stream &s) {
     String node = GwGetVal(LASTNODEADDRESS);
 
     s.println("=========== SYSTEM ==========");
-    s.printf("Model %s\n", Model.c_str());
+    s.printf("Model1 %s\n", Model1.c_str());
+    s.printf("Model2 %s\n", Model2.c_str());
     s.printf("Node: %s\n", node.c_str());
     s.printf("Uptime: %s", uptime.c_str());
     s.printf("Heap \t%d\n", heap);
     s.printf("Heap Free\t%d\n", freeheap);
     s.printf("Heap used %d%%\n", heapUsedPc);
     s.printf("ChipRev \t%d\n", chiprev);
-    s.printf("Model \t%s\n", model);
+    s.printf("ChipModel \t%s\n", chipModel);
     s.printf("Sketch \t%d\n", sketchSize);
     s.printf("Sketch Free \t%d\n", freeSketch);
     s.printf("Flash used %d%%\n", flashUsedPc);

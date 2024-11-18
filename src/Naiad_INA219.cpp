@@ -29,6 +29,7 @@ Naiad_INA219::Naiad_INA219(uint8_t addr, const char* name, BatteryInstance_t i)
     sensor_name = name;
     instance = i;
     present = this->success();
+    present = true;
 }
 
 /*
