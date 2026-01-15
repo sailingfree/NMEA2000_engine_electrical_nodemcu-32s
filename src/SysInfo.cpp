@@ -22,7 +22,7 @@ OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
 #include <Arduino.h>
-#include <ESP.h>
+#include <Esp.h>
 #include <GwPrefs.h>
 #include <NMEA0183Messages.h>
 #include <SysInfo.h>
@@ -32,7 +32,7 @@ OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 void getNetInfo(Stream &s) {
     wifi_sta_list_t wifi_sta_list;
-    tcpip_adapter_sta_list_t adapter_sta_list;
+//    tcpip_adapter_sta_list_t adapter_sta_list;
 
     s.println("=========== NETWORK ==========");
     s.printf("HOST NAME: %s\n", host_name.c_str());
@@ -41,6 +41,7 @@ void getNetInfo(Stream &s) {
     s.printf("WifiIP %s\n", WifiIP.c_str());
     s.printf("WifiSSID %s\n", WifiSSID.c_str());
 
+    /*
     // Get the wifi station list and list the connected device details
     memset(&wifi_sta_list, 0, sizeof(wifi_sta_list));
     memset(&adapter_sta_list, 0, sizeof(adapter_sta_list));
@@ -60,7 +61,7 @@ void getNetInfo(Stream &s) {
         s.println(ip4addr_ntoa((const ip4_addr_t *)&(station.ip)));
         s.println("");
     }
-
+    */
     s.println("=========== END ==========");
 }
 

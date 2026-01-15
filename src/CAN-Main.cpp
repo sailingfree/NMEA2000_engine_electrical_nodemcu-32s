@@ -34,7 +34,7 @@
 #include <Seasmart.h>
 #include <StringStream.h>
 #include <SysInfo.h>
-#include <Time.h>
+#include <time.h>
 #include <WebServer.h>
 #include <WiFi.h>
 #include <Wire.h>
@@ -42,6 +42,7 @@
 #include <html_footer.h>
 #include <html_header.h>
 #include <nmea2000Handlers.h>
+#include <esp_mac.h>
 
 #include <list>
 #include <map>
@@ -670,20 +671,21 @@ void SendN2kBattery() {
 
     if (IsTimeToUpdate(SlowDataUpdated)) {
         SetNextUpdate(SlowDataUpdated, SlowDataUpdatePeriod);
-        BatteryStat battery;
+        BatteryStat batteryHouse, batteryEngine;
 
         // House battery sent as voltage first
-        battery = read_ina219(ina219_house);
-        SendN2kBatteryDetails(battery);
+        batteryHouse = read_ina219(ina219_house);
+        SendN2kBatteryDetails(batteryHouse);
 
         // engine battery second
-        battery = read_ina219(ina219_engine);
-        SendN2kBatteryDetails(battery);
+        batteryEngine = read_ina219(ina219_engine);
+        Console->printf("House %f Current %f Engine %f\n", batteryHouse.voltage, batteryHouse.current, batteryEngine.voltage);
+        SendN2kBatteryDetails(batteryEngine);
 
         // And send the engine battery as the alternator voltage so
         // the B&G Triton display can show it
         // (The triton can only show one battery voltage :())
-        SendN2kEngineSlow(battery.voltage);
+        SendN2kEngineSlow(batteryEngine.voltage);
     }
 }
 
