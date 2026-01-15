@@ -32,5 +32,4 @@ extern String Model1, Model2;
 
 void getNetInfo(Stream& s);
 void getSysInfo(Stream& s);
-int getCpuAvg(int core);
 void getN2kMsgs(Stream& s);

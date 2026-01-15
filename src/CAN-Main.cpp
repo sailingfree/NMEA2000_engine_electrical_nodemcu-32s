@@ -24,7 +24,6 @@
 #include <EngineRpm.h>
 #include <GwPrefs.h>
 #include <GwShell.h>
-#include <Idle.h>
 #include <N2kMessages.h>
 #include <N2kMsg.h>
 #include <NMEA2000.h>
@@ -419,9 +418,6 @@ void setup() {
                   chipid[0], chipid[1], chipid[2], chipid[3], chipid[4], chipid[5],
                   id, macAddress.c_str(), host_name.c_str());
 
-    // get CPU calibration timing
-    calibrateCpu();
-
     // Get the configured wifi type
     String wifi_mode_string = GwGetVal(WIFIMODE, "0");  // 0 = off, 1 = ap, 2 = client
     wifiType = (Gw_WiFi_Mode)wifi_mode_string.toInt();
@@ -593,8 +589,6 @@ void setup() {
 
     // Get the RPM calibration values and setup the timer
     InitRPM();
-
-    IdleInit();
 
     Serial.println("Finished setup");
 }

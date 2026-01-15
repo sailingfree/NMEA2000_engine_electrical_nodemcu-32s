@@ -96,9 +96,6 @@ void getSysInfo(Stream &s) {
     s.printf("Sketch Free \t%d\n", freeSketch);
     s.printf("Flash used %d%%\n", flashUsedPc);
     s.printf("Efuse \t0x%llx\n", efuse);
-    for (int c = 0; c < 2; c++) {
-        s.printf("CPU %d load %d%%\n", c, getCpuAvg(c));
-    }
     s.println("=========== SETTINGS ==========");
     GwPrint(s);
     s.println("=========== END ==========");
