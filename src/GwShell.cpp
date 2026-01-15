@@ -29,7 +29,7 @@ OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <SimpleSerialShell.h>
 #include <StringStream.h>
 #include <SysInfo.h>
-
+#include <taskstats.h>
 #include <map>
 
 static std::map<int, String> History;
@@ -164,6 +164,14 @@ int reboot(int argc, char** argv) {
     return 0;  // I dont think we ever get here
 }
 
+// Get the task stats
+int TaskLog(int argc, char ** argv) {
+    StringStream s;
+    getTaskStats(s);
+    shell.print(s.data);
+    return 0;
+}
+
 // Initialise the shell and add the commands
 void initGwShell() {
     Serial.println("Initialisting the shell");
@@ -178,6 +186,7 @@ void initGwShell() {
     shell.addCommand(F("logger"), logger);
     shell.addCommand(F("reboot"), reboot);
     shell.addCommand(F("msgs"), messages);
+    shell.addCommand(F("ps \t\tShow task stats"), TaskLog);
 }
 
 // Print a prompt to the terminal
