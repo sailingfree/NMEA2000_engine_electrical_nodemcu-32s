@@ -476,7 +476,7 @@ void setup() {
         Console->println("WiFi is off");
     }
 
-    sleep(10);
+//    sleep(10);
 
     // Update over air (OTA)
     if (wifiType != WiFi_off) {
