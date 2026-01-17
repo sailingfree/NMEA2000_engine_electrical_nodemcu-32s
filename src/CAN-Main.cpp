@@ -168,6 +168,10 @@ using namespace std;
 uint32_t mTimeToSec = 0;
 uint32_t mTimeSeconds = 0;
 
+// YD format buffer
+#define Max_YD_Message_Size 500
+char YD_msg[Max_YD_Message_Size] = "";
+
 // Forward declarations
 void HandleNMEA2000Msg(const tN2kMsg &);
 void GetTemperature(void *parameter);
@@ -342,16 +346,14 @@ void N2kToYD_Can(const tN2kMsg &msg, char *MsgBuf) {
     ts = *localtime(&rawtime);
     strftime(time_str, sizeof(time_str), "%T.000", &ts);  // Create time string
 
-    snprintf(MsgBuf, 25, "%s R %0.8x", time_str, canId);  // Set time and canID
+    snprintf(MsgBuf, Max_YD_Message_Size, "%s R %.8x", time_str, canId);  // Set time and canID
 
     for (i = 0; i < len; i++) {
-        snprintf(Byte, 4, " %0.2x", msg.Data[i]);  // Add data fields
+        snprintf(Byte, 4, " %.2x", msg.Data[i]);  // Add data fields
         strcat(MsgBuf, Byte);
     }
 }
 
-#define Max_YD_Message_Size 500
-char YD_msg[Max_YD_Message_Size] = "";
 
 // Create UDP instance
 WiFiUDP udp;
@@ -673,7 +675,7 @@ void SendN2kBattery() {
 
         // engine battery second
         batteryEngine = read_ina219(ina219_engine);
-        Console->printf("House %f Current %f Engine %f\n", batteryHouse.voltage, batteryHouse.current, batteryEngine.voltage);
+//        Console->printf("House %f Current %f Engine %f\n", batteryHouse.voltage, batteryHouse.current, batteryEngine.voltage);
         SendN2kBatteryDetails(batteryEngine);
 
         // And send the engine battery as the alternator voltage so
@@ -686,7 +688,6 @@ void SendN2kBattery() {
 void SendN2kEngineFast()
 {
     static unsigned long FastDataUpdated = InitNextUpdate(FastDataUpdatePeriod, MiscSendOffset);
-    static unsigned long SlowDataUpdated = InitNextUpdate(SlowDataUpdatePeriod, MiscSendOffset);
     tN2kMsg N2kMsg;
 
     if (IsTimeToUpdate(FastDataUpdated))
@@ -835,7 +836,6 @@ void ListDevices(Stream &stream, bool force = false) {
 void loop() {
     int wifi_retry;
     static time_t last = 0;
-    static time_t last2 = 0;
     time_t now = time(NULL);
     ;
 
