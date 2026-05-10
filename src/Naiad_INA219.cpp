@@ -156,7 +156,7 @@ bool Naiad_INA219::ispresent() {
 
 BatteryStat read_ina219(Naiad_INA219& ina219) {
     BatteryStat result;
-return result;
+
     float shuntvoltage = 0;
     float busvoltage = 0;
     float current_mA = 0;
