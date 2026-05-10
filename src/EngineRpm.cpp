@@ -95,7 +95,7 @@ void InitRPM() {
     // 80 is prescaler so 80MHZ divided by 80 = 1MHZ signal ie 0.000001 of a second
     // true - counts up
     timer = timerBegin(0, 80, true);  // this returns a pointer to the hw_timer_t global variable
-
+    // timer = timerBegin(80);
     timerStart(timer);  // start the timer
 }
 
