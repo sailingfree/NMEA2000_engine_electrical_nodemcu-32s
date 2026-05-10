@@ -360,10 +360,8 @@ WiFiUDP udp;
 
 // Send to Yacht device clients over udp using the broadcast address
 void GwSendYD(const tN2kMsg &N2kMsg) {
-    return;
     if (wifiType != WiFi_off) {
         IPAddress udpAddress = WiFi.broadcastIP();
-        udpAddress.fromString("192.168.15.255");
         N2kToYD_Can(N2kMsg, YD_msg);             // Create YD message from PGN
         udp.beginPacket(udpAddress, YDudpPort);  // Send to UDP
         udp.printf("%s\r\n", YD_msg);
@@ -411,6 +409,9 @@ void setup() {
         id += (chipid[i] << (7 * i));
         macAddress += String(chipid[i], HEX);
     }
+
+    // Stop BT to save power
+    btStop();
 
     // Generate the hostname by appending the last two octets of the mac address to make it unique
     String hname = GwGetVal(GWHOST, "n2kgw");
