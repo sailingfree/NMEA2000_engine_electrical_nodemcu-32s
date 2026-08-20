@@ -39,11 +39,11 @@ Naiad_INA219::Naiad_INA219(uint8_t addr, const char* name, BatteryInstance_t i)
 uint16_t calibrate(float shunt_val, float v_shunt_max, float v_bus_max, float i_max_expected) {
     float r_shunt;
     float current_lsb;
-    float power_lsb;
     uint16_t cal;
     uint16_t digits;
     float min_lsb, swap;
 #ifdef INA219_DEBUG
+    float power_lsb;
     float max_current, max_before_overflow, max_shunt_v, max_shunt_v_before_overflow, max_power, i_max_possible, max_lsb;
 #endif
 
@@ -71,9 +71,9 @@ uint16_t calibrate(float shunt_val, float v_shunt_max, float v_bus_max, float i_
 
     swap = (0.04096) / (current_lsb * r_shunt);
     cal = (uint16_t)swap;
-    power_lsb = current_lsb * 20;
 
-#ifdef INA219_DEBUG
+#ifdef INA219_DEBUG    
+    power_lsb = current_lsb * 20;
     i_max_possible = v_shunt_max / r_shunt;
     max_lsb = i_max_expected / 4096;
     max_current = current_lsb * 32767;
@@ -157,12 +157,14 @@ bool Naiad_INA219::ispresent() {
 BatteryStat read_ina219(Naiad_INA219& ina219) {
     BatteryStat result;
 
-    float shuntvoltage = 0;
     float busvoltage = 0;
     float current_mA = 0;
+#ifdef INA219_DEBUG
+    float shuntvoltage = 0;
     float loadvoltage = 0;
     float power_mW = 0;
-    
+#endif 
+
     if(! ina219.ispresent()) {
         result.current = current_mA;
         result.voltage = busvoltage;
@@ -173,12 +175,14 @@ BatteryStat read_ina219(Naiad_INA219& ina219) {
         return result;
     }
 
-    shuntvoltage = ina219.getShuntVoltage_mV();
     busvoltage = ina219.getBusVoltage_V();
     current_mA = ina219.getCurrent_mA();
+#ifdef INA219_DEBUG
+    shuntvoltage = ina219.getShuntVoltage_mV();
     power_mW = ina219.getPower_mW();
     loadvoltage = busvoltage + (shuntvoltage / 1000);
     const char* sensor = ina219.sensor_name;
+#endif
 
 #ifdef INA219_DEBUG
     Serial.printf("Battery %s\n", sensor);
