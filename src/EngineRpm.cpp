@@ -108,26 +108,9 @@ double ReadRPM() {
     // The PCD is roughly the diameter where the middle of the belt touches the pulley.
     double pulley_ratio = (main_dia - belt_depth) / (alt_dia - belt_depth);
 
-    // The W wire from the alternator outputs one pulse for every two poles.
-    // So my Volvo alternator which has 12 poles will output 6 pulses per rev.
-    double rpm_calib = poles / 2.0 * pulley_ratio;
     uint64_t frequency;
-    unsigned long now;
-    unsigned long period;
 
-    now = millis();  // Current sample time
-#if RPM_TYPE == RPM_TYPE_INTERRUPT
-    portENTER_CRITICAL(&mux);
-    if (PeriodCount > 0) {
-        frequency = 1000000 / PeriodCount;  // PeriodCount in 0.000001 of a second
-    }
-    else {
-        frequency = 0LL;
-    }
-    portEXIT_CRITICAL(&mux);
-#else
     frequency = (uint64_t)readFreqAdcFft();
-#endif
 
     // Convert the frequency of the alternator output to alternator revolutions
     EngineRPM = frequency / (poles / 2);
